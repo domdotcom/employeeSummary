@@ -11,6 +11,38 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
 
 
+
+function employeeSummary() {
+    inquirer.prompt([{
+        type: 'list',
+        message: 'What is this employees position?',
+        name: 'name',
+        choices: ['Manager', 'Engineer', 'Intern', 'Show Summary']
+    },
+    ]).then(response => {
+        if (response.name === 'Manger'){
+            managerSummary();
+        } else if (response.name === 'Engineer'){
+            engineerSummary();
+        }else if (response.name === 'Intern'){
+            internSummary();
+        }else if (response.name === 'Show Summary'){
+            generateHTML(outputPath, render(team));
+        };
+    });
+};
+
+function managerSummary() {
+
+}
+
+function engineerSummary() {
+
+}
+
+function internSummary() {
+
+}
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
