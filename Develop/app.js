@@ -9,40 +9,126 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
+const teamMembers = [];
 
-
+function appMenu() {
 
 function employeeSummary() {
-    inquirer.prompt([{
-        type: 'list',
-        message: 'What is this employees position?',
-        name: 'name',
-        choices: ['Manager', 'Engineer', 'Intern', 'Show Summary']
-    },
-    ]).then(response => {
-        if (response.name === 'Manger'){
-            managerSummary();
-        } else if (response.name === 'Engineer'){
-            engineerSummary();
-        }else if (response.name === 'Intern'){
-            internSummary();
-        }else if (response.name === 'Show Summary'){
-            generateHTML(outputPath, render(team));
-        };
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "What is this employees position?",
+        name: "position",
+        choices: ["Manager", "Engineer", "Intern", "Show Summary"],
+      },
+    ])
+    .then((response) => {
+      if (response.position === "Manger") {
+        managerSummary();
+      } else if (response.position === "Engineer") {
+        engineerSummary();
+      } else if (response.position === "Intern") {
+        internSummary();
+      } else if (response.position === "Show Summary") {
+        generateHTML(outputPath, render(team));
+      }
     });
-};
+}
 
 function managerSummary() {
-
+  console.log("Please build your team.");
+  inquirer.prompt([
+    {
+      type: "input",
+      message: "What is your name?",
+      name: "managerName",
+      validate: (answer) => {
+        if (answer !== "") {
+          return true;
+        }
+        return "Please enter at least one character.";
+      }
+    },
+    {
+        type: "input",
+        message: "What is your ID number?",
+        name: "idNumber",
+        validate: (answer) => {
+            const pass = answer.match(/^[1-9]\d*$/);
+            if (pass) {
+                return true;
+            }
+            return "Please enter ID"
+        }
+    },
+    {
+        type: 'input',
+        message: 'What is your office number?',
+        name: 'officeNumber',
+        validate: (answer) => {
+            const pass = answer.match(/^[1-9]\d*$/);
+            if (pass) {
+                return true;
+            }
+            return 'Please enter office number.'
+        }
+    },
+    {
+        type:'input',
+        message: 'What is your email?',
+        name: 'email',
+        validate: (answer) => {
+            const pass = answer.match(/\S+@\S+\.\S+/);
+            if(pass) {
+                return true;
+            }
+            return "Please enter email address."
+        }
+    }
+  ]).then(response => {
+      const manager = new Manager(response.managerName, response.idNumber, response.officeNumber, response.email)
+        teamMembers.push(response.idNumber)
+        createTeam()
+  })
 }
-
+function createTeam(){
+    inquirer.prompt([
+        {
+            type: 'list',
+            message: 'What position would you like to add?',
+            name: 'position',
+            choices: ['engineer', 'intern', "I don't want to add anymore."]
+        }
+    ]).then(response => {
+        switch(response.position){
+            case 'engineer':
+                engineerSummary();
+                break;
+            case 'intern':
+                internSummary();
+                break;
+            default:
+                buildTeam();
+        }
+    })
+}
 function engineerSummary() {
-
+    inquirer.prompt
 }
-
 function internSummary() {
 
 }
+
+function buildTeam() {
+    if (!fs.existsSync(OUTPUT_DIR) ){
+        fs.mkdirSync(OUTPUT_DIR)
+    }
+    fs.writeFileSync(outputPath, render(teamMembers), "utf-8")
+}
+managerSummary();
+}
+appMenu();
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
