@@ -221,7 +221,6 @@ function appMenu() {
       },
     ]);
   }
-  }
 
   function buildTeam() {
     if (!fs.existsSync(OUTPUT_DIR)) {
